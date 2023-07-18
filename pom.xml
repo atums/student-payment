@@ -14,6 +14,7 @@
         <spring.version>5.3.1</spring.version>
         <spring-data.version>2.2.1.RELEASE</spring-data.version>
         <hibernate.version>5.4.23.Final</hibernate.version>
+        <junit.version>4.12</junit.version>
 <!--        <jackson.version>2.11.0</jackson.version>-->
         <slf4j.version>1.7.30</slf4j.version>
     </properties>
@@ -47,11 +48,24 @@
             <artifactId>spring-orm</artifactId>
             <version>${spring.version}</version>
         </dependency>
+<!--        Подключение Spring Data JPA-->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>${spring-data.version}</version>
+        </dependency>
 <!--        Это dependency - для работы Spring c JUnit-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
+<!--        Подключение JUnit-->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 <!--        Подключение логгирования-->
