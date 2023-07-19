@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS jc_passport_office;
 DROP TABLE IF EXISTS jc_country_struct;
 DROP TABLE IF EXISTS jc_university;
 DROP TABLE IF EXISTS jc_street;
+DROP TABLE IF EXISTS jc_student_order_tmp;
 
 CREATE TABLE jc_street(
 	street_code int NOT NULL,
@@ -125,3 +126,38 @@ CREATE TABLE jc_student_child(
 CREATE INDEX idx_student_order_status ON jc_student_order(student_order_status);
 
 CREATE INDEX idx_student_order_id ON jc_student_child(student_order_id);
+
+
+CREATE TABLE jc_student_order_tmp(
+    student_order_id int GENERATED ALWAYS AS IDENTITY NOT NULL,
+    h_sur_name varchar(100) NOT NULL,
+    h_given_name varchar(100) NOT NULL,
+    h_patronymic varchar(100) NOT NULL,
+    h_date_of_birth date NOT NULL,
+    h_passport_seria varchar(10) NOT NULL,
+    h_passport_number varchar(10) NOT NULL,
+    h_passport_date date NOT NULL,
+    h_post_index varchar(10),
+    h_street_code int NOT NULL,
+    h_building varchar(10) NOT NULL,
+    h_extension varchar(10),
+    h_apartment varchar(10) NOT NULL,
+    w_sur_name varchar(100) NOT NULL,
+    w_given_name varchar(100) NOT NULL,
+    w_patronymic varchar(100) NOT NULL,
+    w_date_of_birth date NOT NULL,
+    w_passport_seria varchar(10) NOT NULL,
+    w_passport_number varchar(10) NOT NULL,
+    w_passport_date date NOT NULL,
+    w_post_index varchar(10),
+    w_street_code int NOT NULL,
+    w_building varchar(10) NOT NULL,
+    w_extension varchar(10),
+    w_apartment varchar(10) NOT NULL,
+    CONSTRAINT pk_jc_student_order_tmp_student_order_id
+        PRIMARY KEY(student_order_id),
+    CONSTRAINT fk_jc_student_order_h_street_code FOREIGN KEY(h_street_code)
+        REFERENCES jc_street(street_code) ON DELETE RESTRICT,
+    CONSTRAINT fk_jc_student_order_w_street_code FOREIGN KEY(w_street_code)
+        REFERENCES jc_street(street_code) ON DELETE RESTRICT
+);
