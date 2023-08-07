@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS jc_passport_office;
 DROP TABLE IF EXISTS jc_country_struct;
 DROP TABLE IF EXISTS jc_university;
 DROP TABLE IF EXISTS jc_street;
-DROP TABLE IF EXISTS jc_student_order_tmp;
+DROP TABLE IF EXISTS jc_order_status;
 
 CREATE TABLE jc_street(
 	street_code int NOT NULL,
@@ -43,9 +43,15 @@ CREATE TABLE jc_register_office(
 	REFERENCES jc_country_struct(area_id) ON DELETE RESTRICT
 );
 
+CREATE TABLE jc_order_status(
+    status_id int NOT NULL,
+    status_name varchar(20),
+    CONSTRAINT pk_jc_order_status_status_id PRIMARY KEY (status_id)
+);
+
 CREATE TABLE jc_student_order(
 	student_order_id int GENERATED ALWAYS AS IDENTITY NOT NULL,
-	student_order_status int NOT NULL,
+	student_order_status_id int NOT NULL,
 	student_order_date timestamp NOT NULL,
 	h_sur_name varchar(100) NOT NULL,
 	h_given_name varchar(100) NOT NULL,
@@ -77,25 +83,26 @@ CREATE TABLE jc_student_order(
 	w_apartment varchar(10) NOT NULL,
 	w_university_id int NOT NULL,
 	w_student_number varchar(30) NOT NULL,
-	certificate_id varchar(20) NOT NULL,
+	certificate_number varchar(20) NOT NULL,
 	register_office_id int NOT NULL,
 	marriage_date date NOT NULL,
-	CONSTRAINT pk_jc_student_order_student_order_id 
-	PRIMARY KEY(student_order_id),
+	CONSTRAINT pk_jc_student_order_student_order_id PRIMARY KEY(student_order_id),
 	CONSTRAINT fk_jc_student_order_h_street_code FOREIGN KEY(h_street_code) 
-	REFERENCES jc_street(street_code) ON DELETE RESTRICT,
+	    REFERENCES jc_street(street_code) ON DELETE RESTRICT,
+    CONSTRAINT fk_jc_student_order_student_order_status_id FOREIGN KEY(student_order_status_id)
+        REFERENCES jc_order_status(status_id) ON DELETE RESTRICT,
 	CONSTRAINT fk_jc_student_order_w_street_code FOREIGN KEY(w_street_code) 
-	REFERENCES jc_street(street_code) ON DELETE RESTRICT,
+	    REFERENCES jc_street(street_code) ON DELETE RESTRICT,
 	CONSTRAINT fk_jc_student_order_register_office_id FOREIGN KEY(register_office_id) 
-	REFERENCES jc_register_office(r_office_id) ON DELETE RESTRICT,
+	    REFERENCES jc_register_office(r_office_id) ON DELETE RESTRICT,
 	CONSTRAINT fk_jc_student_order_h_passport_offece_id FOREIGN KEY(h_passport_offece_id) 
-	REFERENCES jc_passport_office(p_office_id) ON DELETE RESTRICT,
+	    REFERENCES jc_passport_office(p_office_id) ON DELETE RESTRICT,
 	CONSTRAINT fk_jc_student_order_w_passport_offece_id FOREIGN KEY(w_passport_offece_id) 
-	REFERENCES jc_passport_office(p_office_id) ON DELETE RESTRICT,	
+	    REFERENCES jc_passport_office(p_office_id) ON DELETE RESTRICT,
 	CONSTRAINT fk_jc_student_order_h_university_id FOREIGN KEY(h_university_id) 
-	REFERENCES jc_university(university_id) ON DELETE RESTRICT,
+	    REFERENCES jc_university(university_id) ON DELETE RESTRICT,
 	CONSTRAINT fk_jc_student_order_w_university_id FOREIGN KEY(w_university_id) 
-	REFERENCES jc_university(university_id) ON DELETE RESTRICT
+	    REFERENCES jc_university(university_id) ON DELETE RESTRICT
 );
 
 CREATE TABLE jc_student_child(
@@ -123,41 +130,6 @@ CREATE TABLE jc_student_child(
 	REFERENCES jc_register_office(r_office_id) ON DELETE RESTRICT
 );
 
-CREATE INDEX idx_student_order_status ON jc_student_order(student_order_status);
+CREATE INDEX idx_student_order_status_id ON jc_student_order(student_order_status_id);
 
 CREATE INDEX idx_student_order_id ON jc_student_child(student_order_id);
-
-
-CREATE TABLE jc_student_order_tmp(
-    student_order_id int GENERATED ALWAYS AS IDENTITY NOT NULL,
-    h_sur_name varchar(100) NOT NULL,
-    h_given_name varchar(100) NOT NULL,
-    h_patronymic varchar(100) NOT NULL,
-    h_date_of_birth date NOT NULL,
-    h_passport_seria varchar(10) NOT NULL,
-    h_passport_number varchar(10) NOT NULL,
-    h_passport_date date NOT NULL,
-    h_post_index varchar(10),
-    h_street_code int NOT NULL,
-    h_building varchar(10) NOT NULL,
-    h_extension varchar(10),
-    h_apartment varchar(10) NOT NULL,
-    w_sur_name varchar(100) NOT NULL,
-    w_given_name varchar(100) NOT NULL,
-    w_patronymic varchar(100) NOT NULL,
-    w_date_of_birth date NOT NULL,
-    w_passport_seria varchar(10) NOT NULL,
-    w_passport_number varchar(10) NOT NULL,
-    w_passport_date date NOT NULL,
-    w_post_index varchar(10),
-    w_street_code int NOT NULL,
-    w_building varchar(10) NOT NULL,
-    w_extension varchar(10),
-    w_apartment varchar(10) NOT NULL,
-    CONSTRAINT pk_jc_student_order_tmp_student_order_id
-        PRIMARY KEY(student_order_id),
-    CONSTRAINT fk_jc_student_order_h_street_code FOREIGN KEY(h_street_code)
-        REFERENCES jc_street(street_code) ON DELETE RESTRICT,
-    CONSTRAINT fk_jc_student_order_w_street_code FOREIGN KEY(w_street_code)
-        REFERENCES jc_street(street_code) ON DELETE RESTRICT
-);
