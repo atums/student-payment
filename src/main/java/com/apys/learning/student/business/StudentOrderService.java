@@ -34,6 +34,10 @@ public class StudentOrderService {
     @Autowired
     private RegisterOfficeRepository daoRegisterOffice;
 
+    @Autowired
+    private StudentOrderChildRepository daoOrderChild;
+
+
     @Transactional
     public void testSave() {
         StudentOrder studentOrder = new StudentOrder();
@@ -51,12 +55,17 @@ public class StudentOrderService {
 
         dao.save(studentOrder);
 
+        StudentOrderChild studentOrderChild = buildChild(studentOrder);
+
+        daoOrderChild.save(studentOrderChild);
+
     }
 
     @Transactional
     public void testGet() {
         List<StudentOrder> all = dao.findAll();
         LOGGER.info(all.get(0).getWife().getGivenName());
+        LOGGER.info(all.get(0).getChildren().get(0).getChild().getGivenName());
     }
 
     private Adult buildPerson(boolean wife) {
@@ -74,7 +83,7 @@ public class StudentOrderService {
         if (wife) {
             person.setSurName("Tums");
             person.setGivenName("Marina");
-            person.setPatronymic("B");
+            person.setPatronymic("V");
             person.setPassportSeria("Wife_S");
             person.setPassportNumber("Wife_N");
             person.setPasportOffice(daoPassportOffice.getOne(1L));
@@ -85,7 +94,7 @@ public class StudentOrderService {
         } else {
             person.setSurName("Tums");
             person.setGivenName("Alex");
-            person.setPatronymic("A");
+            person.setPatronymic("V");
             person.setPassportSeria("Hus_S");
             person.setPassportNumber("Hus_N");
             person.setPasportOffice(daoPassportOffice.getOne(1L));
@@ -94,6 +103,35 @@ public class StudentOrderService {
             person.setUniversity(daoUniversity.getOne(1L));
         }
         person.setDateOfBirth(LocalDate.now());
+        return person;
+    }
+
+    private StudentOrderChild buildChild(StudentOrder studentOrder) {
+        StudentOrderChild person = new StudentOrderChild();
+        person.setStudentOrder(studentOrder);
+
+        Child child = new Child();
+
+        child.setDateOfBirth(LocalDate.now());
+        child.setSurName("Tums");
+        child.setGivenName("Nika");
+        child.setPatronymic("A");
+
+        child.setCertificateDate(LocalDate.now());
+        child.setCertificateNumber("1029384756");
+        child.setRegisterOffice(daoRegisterOffice.getOne(1L));
+
+        Address address = new Address();
+        address.setPostCode("6000");
+        address.setBuilding("1133");
+        address.setExtension("1");
+        address.setApartment("13");
+        Street one = daoStreet.getOne(1L);
+        address.setStreet(one);
+        child.setAddress(address);
+
+        person.setChild(child);
+
         return person;
     }
 }
